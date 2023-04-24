@@ -1,7 +1,7 @@
 import readline from "node:readline/promises";
 import os from "node:os";
 import { nwd, bof, oss, zip } from "./commands/index.js";
-import { COMMANDS } from "./helper.mjs";
+import { COMMANDS, validateArguments } from "./helper.mjs";
 
 export class App {
   constructor() {
@@ -36,78 +36,118 @@ export class App {
 
     rl.on("line", async (line) => {
       const [command, ...args] = line.split(" ");
-      //  if ( !validateCommand(command) ) console.log("Unknown command")
-      //validate Args
 
       switch (command) {
         case COMMANDS.UP: {
-          this.currentDir = nwd.up(this.currentDir);
-          this.showDir();
+          const validatedArgs = validateArguments(COMMANDS.UP, ...args);
+          if (validatedArgs) {
+            this.currentDir = nwd.up(this.currentDir);
+            this.showDir();
+          }
           break;
         }
         case COMMANDS.CD: {
-          this.currentDir = await nwd.cd(this.currentDir, ...args);
-          this.showDir();
+          const validatedArgs = validateArguments(COMMANDS.CD, ...args);
+          if (validatedArgs) {
+            this.currentDir = await nwd.cd(this.currentDir, ...args);
+            this.showDir();
+          }
           break;
         }
         case COMMANDS.LS: {
-          await nwd.ls(this.currentDir);
-          this.showDir();
+          const validatedArgs = validateArguments(COMMANDS.LS, ...args);
+          if (validatedArgs) {
+            await nwd.ls(this.currentDir);
+            this.showDir();
+          }
           break;
         }
         case COMMANDS.CAT: {
-          await bof.cat(this.currentDir, ...args);
-          this.showDir();
+          const validatedArgs = validateArguments(COMMANDS.CAT, ...args);
+          if (validatedArgs) {
+            await bof.cat(this.currentDir, ...args);
+            this.showDir();
+          }
           break;
         }
         case COMMANDS.ADD: {
-          await bof.add(this.currentDir, ...args);
-          this.showDir();
+          const validatedArgs = validateArguments(COMMANDS.ADD, ...args);
+          if (validatedArgs) {
+            await bof.add(this.currentDir, ...args);
+            this.showDir();
+          }
           break;
         }
         case COMMANDS.RN: {
-          await bof.rn(this.currentDir, ...args);
-          this.showDir();
+          const validatedArgs = validateArguments(COMMANDS.RN, ...args);
+          if (validatedArgs) {
+            await bof.rn(this.currentDir, ...args);
+            this.showDir();
+          }
           break;
         }
         case COMMANDS.CP: {
-          await bof.cp(this.currentDir, ...args);
-          this.showDir();
+          const validatedArgs = validateArguments(COMMANDS.CP, ...args);
+          if (validatedArgs) {
+            await bof.cp(this.currentDir, ...args);
+            this.showDir();
+          }
           break;
         }
         case COMMANDS.MV: {
-          await bof.mv(this.currentDir, ...args);
-          this.showDir();
+          const validatedArgs = validateArguments(COMMANDS.MV, ...args);
+          if (validatedArgs) {
+            await bof.mv(this.currentDir, ...args);
+            this.showDir();
+          }
           break;
         }
         case COMMANDS.RM: {
-          await bof.rm(this.currentDir, ...args);
-          this.showDir();
+          const validatedArgs = validateArguments(COMMANDS.RM, ...args);
+          if (validatedArgs) {
+            await bof.rm(this.currentDir, ...args);
+            this.showDir();
+          }
           break;
         }
         case COMMANDS.OS: {
-          oss.oSystem(this.currentDir, ...args);
-          this.showDir();
+          const validatedArgs = validateArguments(COMMANDS.OS, ...args);
+          if (validatedArgs) {
+            oss.oSystem(this.currentDir, ...args);
+            this.showDir();
+          }
           break;
         }
         case COMMANDS.HASH: {
-          hash.hash(...args);
-          this.showDir();
+          const validatedArgs = validateArguments(COMMANDS.HASH, ...args);
+          if (validatedArgs) {
+            hash.hash(...args);
+            this.showDir();
+          }
           break;
         }
         case COMMANDS.COMPRESS: {
-          await zip.compress(this.currentDir, ...args);
-          this.showDir();
+          const validatedArgs = validateArguments(COMMANDS.COMPRESS, ...args);
+          if (validatedArgs) {
+            await zip.compress(this.currentDir, ...args);
+            this.showDir();
+          }
           break;
         }
         case COMMANDS.DECOMPRESS: {
-          await zip.decompress(this.currentDir, ...args);
-          this.showDir();
+          const validatedArgs = validateArguments(COMMANDS.DECOMPRESS, ...args);
+          if (validatedArgs) {
+            await zip.decompress(this.currentDir, ...args);
+            this.showDir();
+          }
           break;
         }
         case COMMANDS.EXIT: {
-          rl.close()
-          this.exitMessage();
+          const validatedArgs = validateArguments(COMMANDS.EXIT, ...args);
+          if (validatedArgs) {
+            rl.close();
+            this.exitMessage();
+          }
           break;
         }
         default:

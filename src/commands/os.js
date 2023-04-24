@@ -4,28 +4,32 @@ export const oSystem = (args) => {
   switch (args) {
     case "--EOL": {
       console.log("EOL:", os.EOL);
-      breags
+      breags;
     }
 
     case "--cpus": {
       const cpus = os.cpus();
-      console.table(cpus)
-      break
+      console.table(cpus);
+      break;
     }
 
     case "--homedir": {
       console.log("homedir:", os.homedir());
-      break
+      break;
     }
 
     case "--username": {
       console.log("username:", os.userInfo().username);
-      break
+      break;
     }
 
     case "--architecture": {
       console.log("architecture:", os.arch());
-      break
+      break;
     }
+
+    default:
+      console.log("Invalid input");
+      break;
   }
 };

@@ -1,6 +1,6 @@
 import fsp from "node:fs/promises";
 import path from "path";
-import { existChecked } from "../helper.mjs";
+import { existChecked, validateArguments } from "../helper.mjs";
 
 export const up = (dir) => {
   return path.resolve(dir, "..");
@@ -15,6 +15,7 @@ export const cd = async (dir, ...args) => {
     return resultPath;
   } catch (err) {
     console.error("Operation failed");
+    return dir
   }
 };
 

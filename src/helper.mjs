@@ -1,26 +1,6 @@
 import fsp from "node:fs/promises";
 import fs from "node:fs";
 import path from "node:path";
-
-export const validateCommand = (command) => {
-  const commandList = [
-    "up",
-    "ls",
-    "cd",
-    "cat",
-    "add",
-    "rn",
-    "cp",
-    "mv",
-    "rm",
-    "os",
-    "hash",
-    "compress",
-    "decompress",
-  ];
-  return commandList.includes(command);
-};
-
 export const COMMANDS = {
   UP: "up",
   CD: "cd",
@@ -36,6 +16,46 @@ export const COMMANDS = {
   COMPRESS: "compress",
   DECOMPRESS: "decompress",
   EXIT: ".exit",
+};
+
+export const validateArguments = (command, ...args) => {
+  switch (command) {
+    case COMMANDS.UP:
+    case COMMANDS.LS:
+    case COMMANDS.EXIT: {
+      if (args.length === 0) {
+        return true;
+      } else {
+        console.log("The number of arguments is incorrect.\n Operation failed");
+        return false;
+      }
+    }
+    case COMMANDS.CD:
+    case COMMANDS.HASH:
+    case COMMANDS.CAT:
+    case COMMANDS.RM:
+    case COMMANDS.ADD:
+    case COMMANDS.OS: {
+      if (args.length === 1 && args?.every((el) => typeof el === "string")) {
+        return true;
+      } else {
+        console.log("The number of arguments is incorrect or argument is not a string.\n Operation failed");
+        return false;
+      }
+    }
+    case COMMANDS.RN:
+    case COMMANDS.CP:
+    case COMMANDS.MV:
+    case COMMANDS.COMPRESS:
+    case COMMANDS.DECOMPRESS: {
+      if (args.length === 2 && args?.every((el) => typeof el === "string")) {
+        return true;
+      } else {
+        console.log("The number of arguments is incorrect or argument is not a string.\n Operation failed");
+        return false;
+      }
+    }
+  }
 };
 
 export const existChecked = async (file) => {
