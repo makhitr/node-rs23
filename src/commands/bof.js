@@ -1,83 +1,89 @@
-import path from 'path';
+import path from "path";
 import fsp from "fs/promises";
-import fs from 'fs';
-
+import fs from "fs";
+import { existChecked, isFileChecked } from "../helper.mjs";
 
 export const cat = async (dir, filePath) => {
-  // надо ли проверять на наличие такого файла?
-  //являетя ли он файлом а не директорией
-  const file = path.join(dir, filePath)
-  console.log(file)
-  try {
-    const data = await fsp.readFile(file, { encoding: 'utf8' });
-    console.log(data)
-  } catch (err) {
-    console.error(err);
+  const file = path.resolve(dir, filePath);
+  const fileExists = await existChecked(file);
+  if (fileExists) {
+    let isFile = await isFileChecked(file);
+    if (isFile) {
+      try {
+        const data = await fsp.readFile(file, { encoding: "utf8" });
+        console.log(data);
+      } catch (err) {
+        console.error(err);
+      }
+    }
+  } else {
+    return;
   }
 };
 
 export const add = async (dir, fileName) => {
   try {
-    const file = path.join(dir, fileName)
-    await fsp.writeFile(file, '', { flag: "ax+" })
+    const file = path.resolve(dir, fileName);
+    await fsp.writeFile(file, "", { flag: "ax+" });
+    console.log("File has been creaded");
   } catch (err) {
     console.error(err);
   }
 };
 
 export const rn = async (dir, ...args) => {
-  const [oldFileName, newFileName] = args
-  const oldFile = path.join(dir, oldFileName)
-  const newFile = path.join(dir, newFileName)
-  try {
-    await fsp.rename(oldFile, newFile)
-  } catch (err) {
-    console.error(err);
+  const [oldFileName, newFileName] = args;
+  const oldFile = path.resolve(dir, oldFileName);
+  const newFile = path.resolve(dir, newFileName);
+  const fileExists = await existChecked(oldFile);
+  if (fileExists) {
+    try {
+      await fsp.rename(oldFile, newFile);
+    } catch (err) {
+      console.error("Operation failed");
+    }
   }
-}
+};
 
-export const cp = async (...args) => {
-  //убирать лишние пробелы
-  const [originalFile, pathToFolder] = args
-  // const fileName = pathToFolder.slice(pathToFolder.lastIndexOf('\\'))
-  // // const originalFile = path.join(dir, pathToFile)
-  // const copiedFile = path.join(pathToFolder, pathToFile)
+export const cp = async (dir, ...args) => {
+  const [pathToFile, pathToFolder] = args;
+  const fileName = path.basename(pathToFile);
+  const originalFile = path.resolve(dir, pathToFile);
+  const copiedFile = path.resolve(dir, pathToFolder, fileName);
 
-  try {
-    const readable = fs.createReadStream(originalFile);
-    const writable = fs.createWriteStream(copiedFile);
-    readable.pipe(writable)
+  const fileExists = await existChecked(originalFile);
+
+  if (fileExists) {
+    try {
+      const readable = fs.createReadStream(originalFile);
+      const writable = fs.createWriteStream(copiedFile);
+      readable.pipe(writable);
+    } catch {
+      console.error("Operation failed");
+    }
   }
-  catch (err) {
-    console.log(err.message)
-  }
-}
+};
 
 export const mv = async (dir, ...args) => {
-  //убирать лишние пробелы
-  const [pathToFile, pathToFolder] = args
+  const [pathToFile, pathToFolder] = args;
+  const originalFile = path.resolve(dir, pathToFile);
 
-  const originalFile = path.join(dir, pathToFile)
-  const copiedFile = path.join(pathToFolder, pathToFile)
-  await cp(dir, ...args)
-  fs.rm(originalFile, { recursive: true, force: true }, (error) => error && console.log(error.message))
-  // try {
-  //   const readable = fs.createReadStream(originalFile);
-  //   const writable = fs.createWriteStream(copiedFile);
-  //   readable.pipe(writable)
-  //   // writable.on('finish', () => fs.rm(originalFile))
-  //   // fs.rm(originalFile)
-  //   // fs.rm(originalFile)
-  // } catch (err) {
-  //   console.log(err.message)
-  // }
+  try {
+    await cp(dir, ...args);
+    await fsp.rm(originalFile, { recursive: true, force: true });
+  } catch {
+    console.log("Operation failed");
+  }
+};
 
-}
-
-// await read();
-
-export const rm = (dir, filePath) => {
-  //убирать лишние пробелы
-  const file = path.join(dir, filePath)
-  fs.rm(file, { recursive: true, force: true }, (error) => error && console.log(error.message))
-}
+export const rm = async (dir, filePath) => {
+  const file = path.resolve(dir, filePath);
+  const fileExists = await existChecked(file);
+  if (fileExists) {
+    try {
+      await fsp.rm(file, { recursive: true, force: true });
+    } catch (err) {
+      console.error("Operation failed");
+    }
+  }
+};

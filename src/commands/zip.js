@@ -1,57 +1,42 @@
-// const { createGzip } = require('zlib');
-// const { pipeline } = require('stream');
-// const {
-//   createReadStream,
-//   createWriteStream,
-// } = require('fs');
+import zlib from "zlib";
+import path from "path";
+import { pipeline } from "stream";
+import { createReadStream, createWriteStream } from "fs";
+import { existChecked } from "../helper.mjs";
 
-// export const compress = () => {
-
-//   const source = createReadStream('input.txt');
-//   const destination = createWriteStream('input.txt.gz');
-//   const brot = zlib.createBrotliCompress();
-//   source.pipe(brot).pipe(destination);
-//   console.log("Program Completed!");
-// }
-
-
-
-
-// pipeline(source, gzip, destination, (err) => {
-//   if (err) {
-//     console.error('Произошла ошибка:', err);
-//     process.exitCode = 1;
-//   }
-// });
-
-import zlib from 'zlib';
-import { pipeline } from 'stream';
-import { createReadStream, createWriteStream } from 'fs';
-
-export const compress = (...args) => {
-  const [pathToFile, pathToDestination] = args
+export const compress = async (dir, ...args) => {
+  const [pathToFile, pathToDestination] = args;
+  const originalFile = path.resolve(dir, pathToFile);
+  const zippedFile = path.resolve(dir, pathToDestination);
+  const fileName = path.basename(pathToFile);
   const brot = zlib.createBrotliCompress();
-  const source = createReadStream(pathToFile);
-  const destination = createWriteStream(pathToDestination);
+  const source = createReadStream(originalFile);
+  const destination = createWriteStream(`${zippedFile}/${fileName}.gz`);
+  const fileExists = await existChecked(originalFile);
+  if (fileExists) {
+    pipeline(source, brot, destination, (err) => {
+      if (err) {
+        console.error("Operation failed");
+      }
+    });
+  }
+};
 
-  pipeline(source, brot, destination, (err) => {
-    if (err) {
-      console.error('Произошла ошибка:', err);
-      process.exitCode = 1;
-    }
-  })
-}
+export const decompress = async (dir, ...args) => {
+  const [pathToFile, pathToDestination] = args;
+  const originalFile = path.resolve(dir, pathToFile);
+  const unzippedFile = path.resolve(dir, pathToDestination);
 
-export const decompress = (...args) => {
-  const [pathToFile, pathToDestination] = args
   const brot = zlib.createBrotliDecompress();
-  const source = createReadStream(pathToFile);
-  const destination = createWriteStream(pathToDestination);
+  const source = createReadStream(originalFile);
+  const destination = createWriteStream(unzippedFile);
+  const fileExists = await existChecked(originalFile);
 
-  pipeline(source, brot, destination, (err) => {
-    if (err) {
-      console.error('Произошла ошибка:', err);
-      process.exitCode = 1;
-    }
-  })
-}
+  if (fileExists) {
+    pipeline(source, brot, destination, (err) => {
+      if (err) {
+        console.error("Operation failed");
+      }
+    });
+  }
+};
