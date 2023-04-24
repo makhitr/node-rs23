@@ -1,0 +1,12 @@
+{
+  "name": "rs23",
+  "version": "1.0.0",
+  "description": "Files-Manager",
+  "main": "index.mjs",
+  "type": "module",
+  "scripts": {
+    "start": "node ./src/index.mjs"
+  },
+  "author": "",
+  "license": "ISC"
+}
